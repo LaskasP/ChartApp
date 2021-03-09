@@ -5,8 +5,7 @@ Years = {}
 countries = {}
 yearId = 0
 countryId = 0
-# directory = os.path.join('H:\\', 'Projects\GitHub\ChartApp\Data\gapminder')
-directory = os.path.join('C:\\', 'Users\max\Documents\GitHub\ChartApp\Data\gapminder')
+directory = os.path.join('H:\\', 'Projects\GitHub\ChartApp\Data\gapminder')
 for root, dirs, files in os.walk(directory):
     for file in files:
         if file.endswith(".csv"):
@@ -32,7 +31,8 @@ for root, dirs, files in os.walk(directory):
                                 country = data[x][0]
                                 id_year = Years[year]
                                 id_country = countries[country]
-                                finalData.append([id_country, id_year, data[x][j]])
+                                if len(data[x][j]) != 0:
+                                    finalData.append([id_country, id_year, data[x][j]])
             with open('DBMSReady/'+file, 'w+', newline ='') as file_csv:
                 write = csv.writer(file_csv)
                 write.writerows(finalData)

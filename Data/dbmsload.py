@@ -5,7 +5,7 @@ import os
 connection = MySQLdb.connect(
                 host = 'localhost',
                 user = 'root',
-                passwd = '********')  # create the connection
+                passwd = 'Laskas1997')  # create the connection
 
 cursor = connection.cursor()     # get the cursor
 cursor.execute("DROP DATABASE chartapp")
@@ -32,7 +32,7 @@ cursor.execute("LOAD DATA INFILE '" + files_dir + "Years.csv' INTO TABLE years F
 
 for name in tablenames:
     if name != "Countries" and name != "Years":
-        cursor.execute("CREATE TABLE " + name + " (country_id INT, year_id INT, value FLOAT, FOREIGN KEY (country_id) REFERENCES Countries(country_id), FOREIGN KEY (year_id) REFERENCES Years(year_id), PRIMARY KEY (country_id,year_id))")
+        cursor.execute("CREATE TABLE " + name + " (country_id INT, year_id INT, value VARCHAR(50), FOREIGN KEY (country_id) REFERENCES Countries(country_id), FOREIGN KEY (year_id) REFERENCES Years(year_id), PRIMARY KEY (country_id,year_id))")
         cursor.execute("LOAD DATA INFILE '" + files_dir + name + ".csv' INTO TABLE " + name + " FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'")
 
 cursor.close()
