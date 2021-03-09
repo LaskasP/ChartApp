@@ -23,10 +23,6 @@ for root, dirs, files in os.walk(files_dir):
         if file.endswith(".csv"):
             tablenames.append(file.split('.')[0])
 
-tables = []
-
-
-
 cursor.execute("CREATE TABLE Countries (country_name VARCHAR(50) NOT NULL, country_id int PRIMARY KEY)")
 cursor.execute("LOAD DATA LOCAL INFILE '" + files_dir + "Countries.csv' INTO TABLE countries FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'")
 
