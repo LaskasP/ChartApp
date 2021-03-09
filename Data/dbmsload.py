@@ -27,10 +27,8 @@ files_dir = "C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/"
 
 cursor.execute("CREATE TABLE Countries (country_name VARCHAR(50) NOT NULL, country_id int PRIMARY KEY)")
 cursor.execute("LOAD DATA INFILE '" + files_dir + "Countries.csv' INTO TABLE countries FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'")
-
 cursor.execute("CREATE TABLE Years (year_value INT NOT NULL, year_id int PRIMARY KEY)")
 cursor.execute("LOAD DATA INFILE '" + files_dir + "Years.csv' INTO TABLE years FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'")
-
 
 for name in tablenames:
     if name != "Countries" and name != "Years":
