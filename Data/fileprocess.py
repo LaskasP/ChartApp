@@ -19,7 +19,7 @@ for root, dirs, files in os.walk(directory):
                     if year not in Years.keys():
                         Years[year] = yearId
                         yearId += 1
-                fileCountries = [x[0] for x in data[1:]]
+                fileCountries = [x[0] for x in data[1:]]  
                 for country in fileCountries:
                     if country not in countries.keys():
                         countries[country] = countryId
