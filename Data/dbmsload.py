@@ -4,8 +4,8 @@ import os
 
 connection = MySQLdb.connect(
                 host = 'localhost',
-                user = 'maximosstratis',
-                passwd = 'maxstr123s')  # create the connection
+                user = 'root',
+                passwd = '********')  # create the connection
 
 cursor = connection.cursor()     # get the cursor
 cursor.execute("DROP DATABASE chartapp")
@@ -16,14 +16,12 @@ cursor.execute("USE chartapp")
 
 tablenames = []
 
-# directory = os.path.join('H:\\', 'Projects\GitHub\ChartApp\Data\DBMSReady')
-directory = os.path.join('C:\\', 'Users\max\Documents\GitHub\ChartApp\Data\DBMSReady')
+directory = os.path.join('H:\\', 'Projects\GitHub\ChartApp\Data\DBMSReady')
+
 for root, dirs, files in os.walk(directory):
     for file in files:
         if file.endswith(".csv"):
             tablenames.append(file.split('.')[0])
-
-tables = []
 
 files_dir = "C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/"
 
