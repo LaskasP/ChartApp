@@ -38,3 +38,5 @@ for name in tablenames:
         cursor.execute("LOAD DATA INFILE '" + files_dir + name + ".csv' INTO TABLE " + name + " FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'")
 
 cursor.close()
+
+
