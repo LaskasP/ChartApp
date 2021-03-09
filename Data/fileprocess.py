@@ -38,12 +38,12 @@ for root, dirs, files in os.walk(directory):
                 write.writerows(finalData)
 
 
-
+#Write years
 with open('DBMSReady\Years.csv', 'w+', newline ='') as file_csv:
     writer = csv.writer(file_csv)
     for key, value in Years.items():
         writer.writerow([key, value])
-
+#Write Countries
 with open('DBMSReady\Countries.csv', 'w+', newline ='') as file_csv:
     writer = csv.writer(file_csv)
     for key, value in countries.items():
