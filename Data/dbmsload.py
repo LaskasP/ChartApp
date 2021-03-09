@@ -5,7 +5,7 @@ import os
 connection = MySQLdb.connect(
                 host = 'localhost',
                 user = 'root',
-                passwd = 'Laskas1997')  # create the connection
+                passwd = '*******')  # create the connection
 
 cursor = connection.cursor()     # get the cursor
 cursor.execute("DROP DATABASE chartapp")
