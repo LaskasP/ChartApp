@@ -5,7 +5,8 @@ Years = {}
 countries = {}
 yearId = 0
 countryId = 0
-directory = os.path.join('H:\\', 'Projects\GitHub\ChartApp\Data\gapminder')
+# directory = os.path.join('H:\\', 'Projects\GitHub\ChartApp\Data\gapminder')
+directory = os.path.join('C:\\', 'Users\max\Documents\GitHub\ChartApp\Data\gapminder')
 for root, dirs, files in os.walk(directory):
     for file in files:
         if file.endswith(".csv"):
@@ -32,18 +33,18 @@ for root, dirs, files in os.walk(directory):
                                 id_year = Years[year]
                                 id_country = countries[country]
                                 finalData.append([id_country, id_year, data[x][j]])
-            with open('DBMSReady\Table_'+file, 'w+', newline ='') as file_csv:
+            with open('DBMSReady/'+file, 'w+', newline ='') as file_csv:
                 write = csv.writer(file_csv)
                 write.writerows(finalData)
 
 
 
-with open('DBMSReady\Table_Years.csv', 'w+', newline ='') as file_csv:
+with open('DBMSReady\Years.csv', 'w+', newline ='') as file_csv:
     writer = csv.writer(file_csv)
     for key, value in Years.items():
         writer.writerow([key, value])
 
-with open('DBMSReady\Table_Countries.csv', 'w+', newline ='') as file_csv:
+with open('DBMSReady\Countries.csv', 'w+', newline ='') as file_csv:
     writer = csv.writer(file_csv)
     for key, value in countries.items():
         writer.writerow([key, value])
