@@ -23,7 +23,8 @@ for root, dirs, files in os.walk(directory):
             tablenames.append(file.split('.')[0])
 
 cursor.execute("CREATE TABLE Countries (country_name VARCHAR(50) NOT NULL, country_id int PRIMARY KEY)")
-cursor.execute("LOAD DATA LOCAL INFILE '" + "Countries.csv' INTO TABLE countries FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'")
+cursor.execute("LOAD DATA LOCAL INFILE '" + files_dir + "Countries.csv' INTO TABLE countries FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'")
+
 cursor.execute("CREATE TABLE Years (year_value INT NOT NULL, year_id int PRIMARY KEY)")
 cursor.execute("LOAD DATA LOCAL INFILE '" + files_dir + "Years.csv' INTO TABLE years FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n'")
 
