@@ -5,7 +5,7 @@ import os
 connection = MySQLdb.connect(
                 host = 'localhost',
                 user = 'root',
-                passwd = '*******')  # create the connection
+                passwd = 'Korinthos909890!')  # create the connection
 
 cursor = connection.cursor()     # get the cursor
 cursor.execute("DROP DATABASE chartapp")
@@ -16,7 +16,7 @@ cursor.execute("USE chartapp")
 
 tablenames = []
 
-directory = os.path.join('H:\\', 'Projects\GitHub\ChartApp\Data\DBMSReady')
+directory = os.path.join('C:\\', 'Users\petro\OneDrive - ΠΑΝΕΠΙΣΤΗΜΙΟ ΙΩΑΝΝΙΝΩΝ\Έγγραφα\Projects\ChartApp\Data\DBMSReady')
 
 for root, dirs, files in os.walk(directory):
     for file in files:
