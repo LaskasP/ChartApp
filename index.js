@@ -33,6 +33,23 @@ app.get('/tables', (req, res) => {
     )
 })
 
+app.get('/tables/:table', (req, res) => {
+    console.log(req.params)
+    const { table } = req.params
+    con.query(
+        `SELECT year_value,value,country_name FROM (SELECT  country_id,year_value,value FROM ${table}
+            LEFT JOIN years ON ${table}.year_id = years.year_id) AS arxidia
+            LEFT JOIN countries ON arxidia.country_id = countries.country_id
+            WHERE country_name = 'Greece' OR country_name = 'Germany' OR country_name = 'Italy'
+            ORDER BY year_value`, (err, results, fields) => {
+        if (err) throw err
+        //results = results.map(v => v.TABLE_NAME)
+        res.send(results)
+    }
+    )
+})
+
 app.listen(3000, () => {
     console.log("OLA KALA")
 })
+
