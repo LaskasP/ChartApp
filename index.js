@@ -3,9 +3,10 @@ const app = express()
 const path = require('path')
 const mysql = require('mysql2')
 
-
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 app.set('views', path.join(__dirname, '/views'))
-//app.set('view engine', 'ejs')
+app.set('view engine', 'ejs')
 
 const con = mysql.createConnection({
     host: 'localhost',
@@ -15,19 +16,59 @@ const con = mysql.createConnection({
 })
 
 con.connect((e) => {
-    if (e) {
+    if (e) {s
         return console.error('Connection failed ' + e.message)
     }
     console.log('Connection established!')
 })
 
-app.use(express.static('views'))
 
+
+app.use(express.static('views'))
+app.get('/', (req, res) => {
+    res.render('index')
+})
+app.get('/plot', (req, res) => {
+    let whereclase = `country_name = '${req.query.country}'`
+    keys = Object.keys(req.query)
+    for(let key of keys){
+        if( key[0] == 'c' && key[7]){
+            whereclase += ` OR country_name = '${req.query[key]}'`
+        }
+    }
+    let newQuery = `SELECT year_value,value,CONCAT(country_name,' ','${req.query.table}') AS country_name FROM (SELECT  country_id,year_value,value FROM ${req.query.table}
+        LEFT JOIN years ON ${req.query.table}.year_id = years.year_id) AS arxidia
+        LEFT JOIN countries ON arxidia.country_id = countries.country_id
+        WHERE ${whereclase}`
+    for(let key of keys){
+        if(key[0] === 't' && key[5]){
+            console.log(key)
+            newQuery += `UNION ALL
+            SELECT year_value,value,CONCAT(country_name,' ','${req.query[key]}') AS country_name FROM (SELECT  country_id,year_value,value FROM ${req.query[key]}
+            LEFT JOIN years ON ${req.query[key]}.year_id = years.year_id) AS arxidia
+            LEFT JOIN countries ON arxidia.country_id = countries.country_id
+            WHERE ${whereclase}`
+        }
+    }
+    newQuery += `ORDER BY year_value`
+    let {country} = req.query
+    let {plot} = req.query
+
+    con.query(newQuery, (err, results, fields) => {
+        if (err) throw err
+        console.log(results)
+        res.render('show', { plot, results, country})
+    })
+
+})
 app.get('/tables', (req, res) => {
     con.query(
         'SELECT table_name FROM information_schema.tables WHERE table_schema ="chartapp"', (err, results, fields) => {
             if (err) throw err
             results = results.map(v => v.TABLE_NAME)
+            results = results.filter((v) => {
+                return (v !== 'years') && (v !== 'countries')
+            })
             res.send(results)
         }
     )
@@ -37,15 +78,11 @@ app.get('/tables/:table', (req, res) => {
     console.log(req.params)
     const { table } = req.params
     con.query(
-        `SELECT year_value,value,country_name FROM (SELECT  country_id,year_value,value FROM ${table}
-            LEFT JOIN years ON ${table}.year_id = years.year_id) AS arxidia
-            LEFT JOIN countries ON arxidia.country_id = countries.country_id
-            WHERE country_name = 'Greece' OR country_name = 'Germany' OR country_name = 'Italy'
-            ORDER BY year_value`, (err, results, fields) => {
-        if (err) throw err
-        //results = results.map(v => v.TABLE_NAME)
-        res.send(results)
-    }
+        `SELECT * FROM ${table}`, (err, results, fields) => {
+            if (err) throw err
+            //results = results.map(v => v.TABLE_NAME)
+            res.send(results)
+        }
     )
 })
 

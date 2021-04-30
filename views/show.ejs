@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" class="has-background-grey-lighter">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChartApp</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+</head>
+
+<body class="has-background-grey-lighter">
+    <section class="section">
+
+            <div class="columns">
+                <div class="column">
+                    <svg></svg>
+                </div>
+                <div class="column is-one-quarter">
+                    <svg class="container" id="legend"></svg>
+                    <a href="/" class="button is-link">Go Back</a>
+                </div>
+        
+            </div>               
+    </section>
+    <script src="https://unpkg.com/axios/dist/axios.min.js">
+    </script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/colorbrewer.v1.min.js"></script>
+    <script>
+        let plot = "<%-plot%>"
+        console.log(plot)
+        if(plot == 'line1'){
+            var margin = { top: 10, right: 30, bottom: 30, left: 60 },
+                width = 560 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+            // append the svg object to the body of the page
+            var svg = d3.select("#my_dataviz")
+                .append("svg")
+                .attr("viewBox", `0 0 800 1000`)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+            var data = <%-JSON.stringify(results) %>;
+
+            var parseTime = d3.timeParse("%Y")
+            data.forEach(function (d) {
+                d.year_value = parseTime(d.year_value);
+                return d;
+            })
+            var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+                .key(function (d) { return d.country_name; })
+                .entries(data);
+            console.log(sumstat)
+            // Add X axis --> it is a date format
+            var x = d3.scaleTime()
+                .domain(d3.extent(data, function (d) { return d.year_value; }))
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([0, d3.max(data, function (d) { return +d.value; })])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // color palette
+            var res = sumstat.map(function (d) { return d.key }) // list of group names
+            var color = d3.scaleOrdinal()
+                .domain(res)
+                .range(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'])
+
+            // Draw the line
+            svg.selectAll(".line")
+                .data(sumstat)
+                .enter()
+                .append("path")
+                .attr("fill", "none")
+                .attr("stroke", function (d) { return color(d.key) })
+                .attr("stroke-width", 1.5)
+                .attr("d", function (d) {
+                    return d3.line()
+                        .x(function (d) { return x(d.year_value); })
+                        .y(function (d) { return y(+d.value); })
+                        (d.values)
+                })
+            
+        }else if(plot === 'line'){
+            leftMargin=70
+            topMargin=30
+            var data = <%-JSON.stringify(results) %>;
+
+            var parseTime = d3.timeParse("%Y")
+            data.forEach(function (d) {
+                d.year_value = parseTime(d.year_value);
+                return d;
+            })
+            var xExtent = d3.extent(data, d => d.year_value);
+            xScale = d3.scaleTime().domain(xExtent).range([leftMargin, 900])
+            var yMax=d3.max(data,d=>d.value)
+            console.log(yMax)
+            yScale = d3.scaleLinear().domain([0, yMax]).range([600, 0])
+            var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+                .key(function (d) { return d.country_name; })
+                .entries(data);
+            console.log(sumstat)
+            xAxis = d3.axisBottom()
+                .scale(xScale)
+            d3.select("svg")
+                .attr("viewBox", `0 0 1100 650`)
+                .append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0,620)")
+                .call(xAxis)
+                .append("text")
+                .style("fill", "grey")
+                .attr("x", (900+70)/2) //middle of the xAxis
+                .attr("y", "25") // a little bit below xAxis
+                .text("Year")
+
+            //yAxis and yAxis label
+            yAxis = d3.axisLeft()
+                .scale(yScale)
+                .ticks(10)
+
+            d3.select('svg')
+                .append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(${leftMargin},20)`) //use variable in translate
+                .call(yAxis)
+            var mediaName = sumstat.map(d => d.key) 
+            var color = d3.scaleOrdinal().domain(mediaName).range(colorbrewer.Set2[8])
+            //select path - three types: curveBasis,curveStep, curveCardinal
+            d3.select("svg")
+                .selectAll(".line")
+                .append("g")
+                .attr("class", "line")
+                .data(sumstat)
+                .enter()
+                .append("path")
+                .attr("d", function (d) {
+                    return d3.line()
+                        .x(d => xScale(d.year_value))
+                        .y(d => yScale(d.value)).curve(d3.curveBasis)
+                        (d.values)
+                })
+                .attr("fill", "none")
+                .attr("stroke", d => color(d.key))
+                .attr("stroke-width", 3)
+
+                var legend = d3.select("#legend")
+                    .attr("viewBox", `0 0 500 760`)
+                    .selectAll('g.legend')
+                    .data(sumstat)
+                    .enter()
+                    .append("g")
+                    .attr("class", "legend");
+
+                legend.append("circle")
+                    .attr("cx", "2rem")
+                    .attr('cy', (d, i) => i * 30 + 30)
+                    .attr("r", 6)
+                    .style("fill", d => color(d.key))
+
+                legend.append("text")
+                    .attr("x", "3rem")
+                    .attr("y", (d, i) => i * 30 + 35)
+                    .text(d => d.key)
+        }
+        
+    </script>
+</body>
+
+</html>
