@@ -30,63 +30,45 @@
     <script>
         let plot = "<%-plot%>"
         console.log(plot)
-        if(plot == 'line1'){
-            var margin = { top: 10, right: 30, bottom: 30, left: 60 },
-                width = 560 - margin.left - margin.right,
-                height = 500 - margin.top - margin.bottom;
-            // append the svg object to the body of the page
-            var svg = d3.select("#my_dataviz")
-                .append("svg")
-                .attr("viewBox", `0 0 800 1000`)
-                .append("g")
+        if(plot == 'scater'){
+            var svg = d3.select("svg")
+            .append("svg")
+            .attr("viewBox", `0 0 1100 650`)
+            .append("g")
                 .attr("transform",
-                    "translate(" + margin.left + "," + margin.top + ")");
-            var data = <%-JSON.stringify(results) %>;
+                    "translate(0,620)");
 
-            var parseTime = d3.timeParse("%Y")
-            data.forEach(function (d) {
-                d.year_value = parseTime(d.year_value);
-                return d;
-            })
-            var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
-                .key(function (d) { return d.country_name; })
-                .entries(data);
-            console.log(sumstat)
-            // Add X axis --> it is a date format
-            var x = d3.scaleTime()
-                .domain(d3.extent(data, function (d) { return d.year_value; }))
-                .range([0, width]);
+            // Add X axis
+            var x = d3.scaleLinear()
+                .domain([0, 4000])
+                .range([ 0, 50 ]);
             svg.append("g")
-                .attr("transform", "translate(0," + height + ")")
+                .attr("transform", "translate(0,650)")
                 .call(d3.axisBottom(x));
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([0, d3.max(data, function (d) { return +d.value; })])
-                .range([height, 0]);
+                .domain([0, 500000])
+                .range([ 650, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
 
-            // color palette
-            var res = sumstat.map(function (d) { return d.key }) // list of group names
-            var color = d3.scaleOrdinal()
-                .domain(res)
-                .range(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'])
-
-            // Draw the line
-            svg.selectAll(".line")
+            var data = <%-JSON.stringify(results) %>;
+            var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+                .key(function (d) { return d.country_name; })
+                .entries(data);
+            // Add dots
+            svg.append('g')
+                .selectAll("dot")
                 .data(sumstat)
                 .enter()
-                .append("path")
-                .attr("fill", "none")
-                .attr("stroke", function (d) { return color(d.key) })
-                .attr("stroke-width", 1.5)
-                .attr("d", function (d) {
-                    return d3.line()
-                        .x(function (d) { return x(d.year_value); })
-                        .y(function (d) { return y(+d.value); })
-                        (d.values)
-                })
+                .append("circle")
+                .attr("cx", function (d) { return x(d.value); } )
+                .attr("cy", function (d) { return y(d.key.value); } )
+                .attr("r", 1.5)
+                .style("fill", "#69b3a2")
+
+
             
         }else if(plot === 'line'){
             leftMargin=70

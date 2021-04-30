@@ -11,8 +11,12 @@ const getTable = async (table) => {
 //GET COUNTRIES
 document.querySelector('#plotSelect').addEventListener('change', function () {
     console.log(this.value)
-    if (this.value === 'line') {
-        console.log('ela1')
+    if (this.value === 'scater') {
+        document.querySelector('#addButtonCountry').disabled = true
+        document.querySelector('#addButtonTables').disabled = true
+        let newTable = document.querySelector('#copythis').cloneNode(true)
+        newTable.firstElementChild.firstElementChild.setAttribute("name",`table2`)
+        document.querySelector('#tableSelectField').insertBefore(newTable,document.querySelector('#copythis'))
     }
     console.log('ela2')
 })

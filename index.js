@@ -29,30 +29,39 @@ app.get('/', (req, res) => {
     res.render('index')
 })
 app.get('/plot', (req, res) => {
-    let whereclase = `country_name = '${req.query.country}'`
-    keys = Object.keys(req.query)
-    for(let key of keys){
-        if( key[0] == 'c' && key[7]){
-            whereclase += ` OR country_name = '${req.query[key]}'`
+    let {plot} = req.query
+    let newQuery = ''
+    if( plot === 'line'){
+
+
+        let whereclase = `country_name = '${req.query.country}'`
+        keys = Object.keys(req.query)
+        for(let key of keys){
+            if( key[0] == 'c' && key[7]){
+                whereclase += ` OR country_name = '${req.query[key]}'`
+            }
         }
-    }
-    let newQuery = `SELECT year_value,value,CONCAT(country_name,' ','${req.query.table}') AS country_name FROM (SELECT  country_id,year_value,value FROM ${req.query.table}
-        LEFT JOIN years ON ${req.query.table}.year_id = years.year_id) AS arxidia
-        LEFT JOIN countries ON arxidia.country_id = countries.country_id
-        WHERE ${whereclase}`
-    for(let key of keys){
-        if(key[0] === 't' && key[5]){
-            console.log(key)
-            newQuery += `UNION ALL
-            SELECT year_value,value,CONCAT(country_name,' ','${req.query[key]}') AS country_name FROM (SELECT  country_id,year_value,value FROM ${req.query[key]}
-            LEFT JOIN years ON ${req.query[key]}.year_id = years.year_id) AS arxidia
+        newQuery = `SELECT year_value,value,CONCAT(country_name,' ','${req.query.table}') AS country_name FROM (SELECT  country_id,year_value,value FROM ${req.query.table}
+            LEFT JOIN years ON ${req.query.table}.year_id = years.year_id) AS arxidia
             LEFT JOIN countries ON arxidia.country_id = countries.country_id
             WHERE ${whereclase}`
+        for(let key of keys){
+            if(key[0] === 't' && key[5]){
+                console.log(key)
+                newQuery += `UNION ALL
+                SELECT year_value,value,CONCAT(country_name,' ','${req.query[key]}') AS country_name FROM (SELECT  country_id,year_value,value FROM ${req.query[key]}
+                LEFT JOIN years ON ${req.query[key]}.year_id = years.year_id) AS arxidia
+                LEFT JOIN countries ON arxidia.country_id = countries.country_id
+                WHERE ${whereclase}`
+            }
         }
+        newQuery += `ORDER BY year_value`
+    }else if(plot === 'scater'){
+        newQuery = `SELECT `
+    }else{
+        console.log('lol')
     }
-    newQuery += `ORDER BY year_value`
     let {country} = req.query
-    let {plot} = req.query
 
     con.query(newQuery, (err, results, fields) => {
         if (err) throw err
