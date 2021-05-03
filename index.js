@@ -11,7 +11,7 @@ app.set('view engine', 'ejs')
 const con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Korinthos909890!',
+    password: '*******',
     database: 'chartapp'
 })
 
