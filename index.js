@@ -11,12 +11,12 @@ app.set('view engine', 'ejs')
 const con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '*******',
+    password: 'Laskas1997',
     database: 'chartapp'
 })
 
 con.connect((e) => {
-    if (e) {s
+    if (e) {
         return console.error('Connection failed ' + e.message)
     }
     console.log('Connection established!')
@@ -31,6 +31,7 @@ app.get('/', (req, res) => {
 app.get('/plot', (req, res) => {
     let {plot} = req.query
     let newQuery = ''
+    let tables = []
     if( plot === 'line'){
 
 
@@ -57,16 +58,30 @@ app.get('/plot', (req, res) => {
         }
         newQuery += `ORDER BY year_value`
     }else if(plot === 'scater'){
-        newQuery = `SELECT `
+        newQuery = `SELECT value, value1, prwto.year_value FROM (SELECT year_value,value,country_name FROM (SELECT  country_id,year_value,value FROM ${req.query.table}
+            LEFT JOIN years ON ${req.query.table}.year_id = years.year_id) AS arxidia
+            LEFT JOIN countries ON arxidia.country_id = countries.country_id
+            WHERE country_name = '${req.query.country}'
+            ) AS prwto
+            INNER JOIN 
+            (SELECT year_value,value1,country_name FROM (SELECT  country_id,year_value,value AS value1 FROM ${req.query.table2}
+            LEFT JOIN years ON ${req.query.table2}.year_id = years.year_id) AS arxidia
+            LEFT JOIN countries ON arxidia.country_id = countries.country_id
+            WHERE country_name = '${req.query.country}'
+            ) AS deutero
+            ON 
+            prwto.year_value = deutero.year_value;`
+            tables.push(req.query.table2)
+            tables.push(req.query.table)
     }else{
         console.log('lol')
     }
     let {country} = req.query
-
+    console.log(country)
     con.query(newQuery, (err, results, fields) => {
         if (err) throw err
         console.log(results)
-        res.render('show', { plot, results, country})
+        res.render('show', { plot, results, tables, country})
     })
 
 })

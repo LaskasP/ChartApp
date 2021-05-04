@@ -29,46 +29,61 @@
     <script src="https://d3js.org/colorbrewer.v1.min.js"></script>
     <script>
         let plot = "<%-plot%>"
+        leftMargin=70
         console.log(plot)
         if(plot == 'scater'){
+            let tables = <%-JSON.stringify(tables) %>
+            var data = <%-JSON.stringify(results) %>
+            let country = <%-JSON.stringify(country) %>
             var svg = d3.select("svg")
-            .append("svg")
             .attr("viewBox", `0 0 1100 650`)
             .append("g")
-                .attr("transform",
-                    "translate(0,620)");
-
-            // Add X axis
+            var xMax = d3.max(data, function (d) {
+     return d.value;})
             var x = d3.scaleLinear()
-                .domain([0, 4000])
-                .range([ 0, 50 ]);
-            svg.append("g")
-                .attr("transform", "translate(0,650)")
-                .call(d3.axisBottom(x));
-
-            // Add Y axis
+                .domain([0,  xMax + 0.1*xMax])
+                .range([leftMargin, 900])
+                        // Add Y axis
+            var yMax = d3.max(data, function (d) {
+     return d.value1;})
             var y = d3.scaleLinear()
-                .domain([0, 500000])
-                .range([ 650, 0]);
+                .domain([0, yMax + 0.1*yMax])
+                .range([ 620, 0]);
+            
+            let xA = d3.axisBottom()
+                .scale(x)
+            let yA = d3.axisLeft()
+                .scale(y)
+
             svg.append("g")
-                .call(d3.axisLeft(y));
+                .attr("class", "axis")
+                .attr("transform", "translate(0,620)")
+                .call(xA)
 
-            var data = <%-JSON.stringify(results) %>;
-            var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
-                .key(function (d) { return d.country_name; })
-                .entries(data);
-            // Add dots
-            svg.append('g')
-                .selectAll("dot")
-                .data(sumstat)
-                .enter()
-                .append("circle")
-                .attr("cx", function (d) { return x(d.value); } )
-                .attr("cy", function (d) { return y(d.key.value); } )
-                .attr("r", 1.5)
-                .style("fill", "#69b3a2")
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(${leftMargin},20)`) //use variable in translate
+                .call(yA)
 
+            const circle = svg.selectAll('.ufoCircle')
+            .data(data)
+            .enter().append('circle')
+            .attr('class', 'ufoCirlce')
+            .style('fill', 'limegreen')
+            .attr('r', 10)
+            .attr("cx", function (d) { return x(d.value); } )
+            .attr("cy", function (d) { return y(d.value1); } )
 
+            svg.append("text")
+                .attr("x", ( 900/ 2))             
+                .attr("y", '12')
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("fill", "grey")
+                .text(`Scatter plot of ${tables[0].replace(/_/g, ' ')} and ${tables[1].replace(/_/g, ' ')} for ${country}`);
+
+            const xAxis = d3.axisBottom(x);
+            const yAxis = d3.axisLeft(y);
             
         }else if(plot === 'line'){
             leftMargin=70
@@ -84,7 +99,7 @@
             xScale = d3.scaleTime().domain(xExtent).range([leftMargin, 900])
             var yMax=d3.max(data,d=>d.value)
             console.log(yMax)
-            yScale = d3.scaleLinear().domain([0, yMax]).range([600, 0])
+            yScale = d3.scaleLinear().domain([0, yMax]).range([620, 0])
             var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
                 .key(function (d) { return d.country_name; })
                 .entries(data);
