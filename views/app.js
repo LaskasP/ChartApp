@@ -28,7 +28,7 @@ const fetchTableNames = async () => {
         let tables = res.data
         for (let table of tables) {
             let option = document.createElement('option')
-            Object.assign(option, { value: table, text: table })
+            Object.assign(option, { value: table, text: table.replace(/_/g, ' ') })
             select = document.querySelector('#tableSelect')
             select.append(option)
             console.log('ok')
@@ -38,6 +38,7 @@ const fetchTableNames = async () => {
     }
 }
 fetchTableNames()
+
 
 const fetchCountries = async () => {
     try {
