@@ -18,6 +18,12 @@
                 </div>
                 <div class="column is-one-quarter">
                     <svg class="container" id="legend"></svg>
+                    <div class="block is-hidden" id = "selector">
+                    <div class="select">
+                        <select name="plot" id="plotSelect">
+                        </select>
+                    </div>
+                </div class="block">
                     <a href="/" class="button is-link">Go Back</a>
                 </div>
         
@@ -29,52 +35,139 @@
     <script src="https://d3js.org/colorbrewer.v1.min.js"></script>
     <script>
         let plot = "<%-plot%>"
-        console.log(plot)
-        if(plot == 'scater'){
-            var svg = d3.select("svg")
-            .append("svg")
-            .attr("viewBox", `0 0 1100 650`)
-            .append("g")
-                .attr("transform",
-                    "translate(0,620)");
-
-            // Add X axis
-            var x = d3.scaleLinear()
-                .domain([0, 4000])
-                .range([ 0, 50 ]);
-            svg.append("g")
-                .attr("transform", "translate(0,650)")
-                .call(d3.axisBottom(x));
-
-            // Add Y axis
-            var y = d3.scaleLinear()
-                .domain([0, 500000])
-                .range([ 650, 0]);
-            svg.append("g")
-                .call(d3.axisLeft(y));
-
-            var data = <%-JSON.stringify(results) %>;
-            var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+        let data = <%-JSON.stringify(results) %>
+        let leftMargin = 70
+        let topMargin=30
+        var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
                 .key(function (d) { return d.country_name; })
                 .entries(data);
-            // Add dots
-            svg.append('g')
-                .selectAll("dot")
-                .data(sumstat)
+        //if( groupedby === 'decade' && plot !== 'scater'){
+            
+        //}
+        if(plot ==='bar'){
+            document.querySelector('#selector').classList.remove('is-hidden')
+            groupedData = Object.keys(sumstat).map((k)=> sumstat[k])
+            console.log(groupedData)
+            let select = document.querySelector('#plotSelect')
+            selectValue = 0
+            groupedData.forEach((o)=>{
+                option = document.createElement('option')
+                Object.assign(option, { value: `${selectValue}`, text: o.key.replace(/_/g, ' ') })
+                select.append(option)
+                selectValue += 1                
+            })
+            select.addEventListener('change',()=>{
+                update(groupedData[parseInt(select.value)])
+            })
+            var svg = d3.select("svg")
+            .attr("viewBox", `0 0 1100 650`)
+            .append("g")
+            var xExtent = d3.extent(data, d => d.year_value);
+            x = d3.scaleBand()
+                    .range([ leftMargin, 1100 ])
+                    .domain(data.map(function(d) { return d.year_value; }))
+                    .padding(0.2);
+            var xAxis = svg.append("g")
+                //.attr("transform", "rotate(-65)")
+                .attr("transform", "translate(0,620)")
+                
+            // Initialize the Y axis
+            var y = d3.scaleLinear()
+                .range([ 600, 0]);
+            var yAxis = svg.append("g")
+                .attr("class", "myYaxis")
+                .attr("transform", `translate(${leftMargin},20)`)
+
+            function update(data) {
+                // Update the X axis
+
+                x.domain(data.values.map(function(d) { return d.year_value; }))
+                xAxis.call(d3.axisBottom(x)).selectAll("text")  
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-80)");
+                // Update the Y axis
+                let yMax = d3.max(data.values, function(d) { return d.value })
+                y.domain([0,  yMax+yMax*0.1]);
+                yAxis.transition().duration(1000).call(d3.axisLeft(y));
+
+                // Create the u variable
+                var u = svg.selectAll("rect")
+                .data(data.values)
+
+                u
                 .enter()
-                .append("circle")
-                .attr("cx", function (d) { return x(d.value); } )
-                .attr("cy", function (d) { return y(d.key.value); } )
-                .attr("r", 1.5)
-                .style("fill", "#69b3a2")
+                .append("rect") // Add a new rect for each new elements
+                .merge(u) // get the already existing elements as well
+                .transition() // and apply changes to all of them
+                .duration(1000)
+                    .attr("x", function(d) { return x(d.year_value); })
+                    .attr("y", function(d) { return y(d.value); })
+                    .attr("width", x.bandwidth())
+                    .attr("height", function(d) { return 620 - y(d.value); })
+                    .attr("fill", "#69b3a2")
+                // If less group in the new dataset, I delete the ones not in use anymore
+                u
+                .exit()
+                .remove()
+                }
+                update(groupedData[0])
+        }
+        else if(plot === 'scater'){
+            let tables = <%-JSON.stringify(tables) %>
+            let country = <%-JSON.stringify(country) %>
+            var svg = d3.select("svg")
+            .attr("viewBox", `0 0 1100 650`)
+            .append("g")
+            var xMax = d3.max(data, function (d) {
+     return d.value;})
+            var x = d3.scaleLinear()
+                .domain([0,  xMax + 0.1*xMax])
+                .range([leftMargin, 900])
+                        // Add Y axis
+            var yMax = d3.max(data, function (d) {
+     return d.value1;})
+            var y = d3.scaleLinear()
+                .domain([0, yMax + 0.1*yMax])
+                .range([ 620, 0]);
+            
+            let xA = d3.axisBottom()
+                .scale(x)
+            let yA = d3.axisLeft()
+                .scale(y)
 
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0,620)")
+                .call(xA)
 
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(${leftMargin},20)`) //use variable in translate
+                .call(yA)
+
+            const circle = svg.selectAll('.ufoCircle')
+            .data(data)
+            .enter().append('circle')
+            .attr('class', 'ufoCirlce')
+            .style('fill', 'limegreen')
+            .attr('r', 10)
+            .attr("cx", function (d) { return x(d.value); } )
+            .attr("cy", function (d) { return y(d.value1); } )
+
+            svg.append("text")
+                .attr("x", ( 900/ 2))             
+                .attr("y", '12')
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("fill", "grey")
+                .text(`Scatter plot of ${tables[0].replace(/_/g, ' ')} and ${tables[1].replace(/_/g, ' ')} for ${country}`);
+
+            const xAxis = d3.axisBottom(x);
+            const yAxis = d3.axisLeft(y);
             
         }else if(plot === 'line'){
-            leftMargin=70
-            topMargin=30
-            var data = <%-JSON.stringify(results) %>;
-
             var parseTime = d3.timeParse("%Y")
             data.forEach(function (d) {
                 d.year_value = parseTime(d.year_value);
@@ -83,12 +176,7 @@
             var xExtent = d3.extent(data, d => d.year_value);
             xScale = d3.scaleTime().domain(xExtent).range([leftMargin, 900])
             var yMax=d3.max(data,d=>d.value)
-            console.log(yMax)
-            yScale = d3.scaleLinear().domain([0, yMax]).range([600, 0])
-            var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
-                .key(function (d) { return d.country_name; })
-                .entries(data);
-            console.log(sumstat)
+            yScale = d3.scaleLinear().domain([0, yMax]).range([620, 0])
             xAxis = d3.axisBottom()
                 .scale(xScale)
             d3.select("svg")

@@ -56,6 +56,24 @@
                                 </select>
                             </div>
                         </div>
+                        
+                    </div>
+                    <div class="field">
+                        <div class="control" id = "slider">
+                            <label for="min">Min Year:</label>
+                            <input id = 'min'type="number" min="1800" max="2100" step="1" value="1921" name = "minYear" />
+                            <label for="max">Max Year:</label>
+                            <input id = 'max'type="number" min="1800" max="2100" step="1" value="2021" name = "maxYear" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control"> <div class="select">
+                            <select name="groupBy" id="groupby">
+                                <option value = "all">All years</option>
+                                <option value = "dekaetia">Group by decade</option>
+                                <option value = "pentaetia">Group by five years</option>
+                            </select>
+                        </div></div>
                     </div>
                     <div class="field">
                         <div class="control">
