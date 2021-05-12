@@ -34,7 +34,7 @@ app.get('/plot', (req, res) => {
     let tables = []
     let { minYear } = req.query
     let { maxYear } = req.query
-
+    let { groupBy } = req.query
     if( plot === 'line'){
         let whereclase = `(country_name = '${req.query.country}'`
         keys = Object.keys(req.query)
@@ -105,7 +105,8 @@ app.get('/plot', (req, res) => {
     console.log(country)
     con.query(newQuery, (err, results, fields) => {
         if (err) throw err
-        console.log(results)
+        results = groupby(results, groupBy)
+        //console.log(results)
         res.render('show', { plot, results, tables, country})
     })
 
@@ -139,3 +140,47 @@ app.listen(3000, () => {
     console.log("OLA KALA")
 })
 
+function groupby(values, type){
+    if(type === 'dekaetia'){
+        values = findValue(values, 10)
+        console.log(values)
+    }else if(type === 'pentaetia'){
+        values = findValue(values, 5)
+        console.log(values)
+    }
+    function findDifferentCountries(values){
+        country_names = []
+        for (value of values){
+            if (!country_names.includes(value.country_name)) country_names.push(value.country_name)
+        }
+        return country_names
+    }
+    return values
+
+    function findValue(values, range){
+        countries = findDifferentCountries(values)
+        newValues = []
+        for (country of countries){
+            sum = 0
+            counter = 0
+            prevValue = values[0].year_value - 1
+            for (value of values){
+                if (country === value.country_name){
+                    if ((value.year_value - prevValue) != 1){
+                        sum = 0
+                        counter = 0
+                    }
+                    prevValue = value.year_value
+                    sum += value.value
+                    counter += 1
+                }
+                if (counter === range){
+                    newValues.push({year_value: value.year_value, value: sum/range, country_name: value.country_name})
+                    counter = 0
+                    sum = 0
+                }
+            }
+        }
+        return newValues
+    }
+}

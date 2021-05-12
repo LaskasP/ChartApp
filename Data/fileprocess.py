@@ -1,6 +1,6 @@
 import os
 import csv
-
+import math
 Years = {}
 countries = {}
 yearId = 0
@@ -34,9 +34,6 @@ for root, dirs, files in os.walk(directory):
                                 id_country = countries[country]
                                 if len(data[x][j]) != 0:
                                     finalData.append([id_country, id_year, data[x][j]])
-                                    if id_country == 5:
-                                        print(file)
-                                        print(id_country, id_year, data[x][j])
             with open('Data/DBMSReady/'+file, 'w+', newline ='') as file_csv:
                 write = csv.writer(file_csv)
                 write.writerows(finalData)
@@ -46,13 +43,17 @@ for root, dirs, files in os.walk(directory):
 with open('Data/DBMSReady\Years.csv', 'w+', newline ='') as file_csv:
     writer = csv.writer(file_csv)
     for key, value in Years.items():
-        writer.writerow([key, value])
+        dekaetia = math.floor((float(key)-1000)/10)*10
+        pentaetia = round((float(key)-1000)/10)
+        if int(key) == 1965:
+            print(pentaetia, dekaetia)
+            print(round(96.5))
+        if (((float(key)-1000)/10) - dekaetia/10) > 0.5:
+            pentaetia -= 0.5
+        writer.writerow([key, value, dekaetia, pentaetia])
 #Write Countries
 with open('Data/DBMSReady\Countries.csv', 'w+', newline ='') as file_csv:
     writer = csv.writer(file_csv)
     for key, value in countries.items():
         writer.writerow([key, value])
-
-print(Years)
-print(countries)
 
