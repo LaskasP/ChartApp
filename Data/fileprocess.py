@@ -5,11 +5,13 @@ Years = {}
 countries = {}
 yearId = 0
 countryId = 0
-directory = os.path.join('H:\\', 'Projects\GitHub\ChartApp\Data\gapminder')
+directory = os.path.join(
+    'C:\\', 'Users\petro\OneDrive - ΠΑΝΕΠΙΣΤΗΜΙΟ ΙΩΑΝΝΙΝΩΝ\Έγγραφα\Projects\ChartApp\Data\gapminder')
 for root, dirs, files in os.walk(directory):
     for file in files:
         if file.endswith(".csv"):
-            finalData =[]
+            print(file)
+            finalData = []
             with open("Data\gapminder\\"+file) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',')
                 data = list(csv_reader)
@@ -19,7 +21,7 @@ for root, dirs, files in os.walk(directory):
                     if year not in Years.keys():
                         Years[year] = yearId
                         yearId += 1
-                fileCountries = [x[0] for x in data[1:]]  
+                fileCountries = [x[0] for x in data[1:]]
                 for country in fileCountries:
                     if country not in countries.keys():
                         countries[country] = countryId
@@ -33,27 +35,20 @@ for root, dirs, files in os.walk(directory):
                                 id_year = Years[year]
                                 id_country = countries[country]
                                 if len(data[x][j]) != 0:
-                                    finalData.append([id_country, id_year, data[x][j]])
-            with open('Data/DBMSReady/'+file, 'w+', newline ='') as file_csv:
+                                    finalData.append(
+                                        [id_country, id_year, data[x][j]])
+            with open('Data/DBMSReady/'+file, 'w+', newline='') as file_csv:
                 write = csv.writer(file_csv)
                 write.writerows(finalData)
 
 
-#Write years
-with open('Data/DBMSReady\Years.csv', 'w+', newline ='') as file_csv:
+# Write years
+with open('Data/DBMSReady\Years.csv', 'w+', newline='') as file_csv:
     writer = csv.writer(file_csv)
     for key, value in Years.items():
-        dekaetia = math.floor((float(key)-1000)/10)*10
-        pentaetia = round((float(key)-1000)/10)
-        if int(key) == 1965:
-            print(pentaetia, dekaetia)
-            print(round(96.5))
-        if (((float(key)-1000)/10) - dekaetia/10) > 0.5:
-            pentaetia -= 0.5
-        writer.writerow([key, value, dekaetia, pentaetia])
-#Write Countries
-with open('Data/DBMSReady\Countries.csv', 'w+', newline ='') as file_csv:
+        writer.writerow([key, value])
+# Write Countries
+with open('Data/DBMSReady\Countries.csv', 'w+', newline='') as file_csv:
     writer = csv.writer(file_csv)
     for key, value in countries.items():
         writer.writerow([key, value])
-

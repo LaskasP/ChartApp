@@ -29,51 +29,57 @@
                         </div>
                     </div>
                     <div class="field " id="tableSelectField">
-                        <label for = "tableSelect" class="label">Select one or multiple tables</label>
-                        <div class="block " id = "addTableContainer">
-                            <button type = "button" id= "addButtonTables" class="button is-primary is-light is-rounded"><span class="icon"><i class="fas fa-plus"></i></span>
+                        <label for="tableSelect" class="label">Select one or multiple tables</label>
+                        <div class="block " id="addTableContainer">
+                            <button type="button" id="addButtonTables"
+                                class="button is-primary is-light is-rounded"><span class="icon"><i
+                                        class="fas fa-plus"></i></span>
                             </button>
                         </div>
-                        <div class="control" id ="copythis">
+                        <div class="control" id="copythis">
                             <div class="select">
                                 <select name="table" id="tableSelect">
                                     <option>Select table</option>
                                 </select>
                             </div>
-                        </div>   
+                        </div>
                     </div>
 
                     <div class="field" id="countryMultiSelectField">
                         <label class="label">Select one or multiple countries</label>
-                        <div class="block" id = "addCountryContainer">
-                            <button type = "button" id= "addButtonCountry" class="button is-primary is-light is-rounded"><span class="icon"><i class="fas fa-plus"></i></span>
+                        <div class="block" id="addCountryContainer">
+                            <button type="button" id="addButtonCountry"
+                                class="button is-primary is-light is-rounded"><span class="icon"><i
+                                        class="fas fa-plus"></i></span>
                             </button>
                         </div>
-                        <div class="control" id ="copythisCountry">
+                        <div class="control" id="copythisCountry">
                             <div class="select">
                                 <select name="country" id="countryMultiSelect">
                                     <option>Select country</option>
                                 </select>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div class="field">
-                        <div class="control" id = "slider">
+                        <div class="control" id="slider">
                             <label for="min">Min Year:</label>
-                            <input id = 'min'type="number" min="1800" max="2100" step="1" value="1921" name = "minYear" />
+                            <input id='min' type="number" min="1800" max="2100" step="1" value="1921" name="minYear" />
                             <label for="max">Max Year:</label>
-                            <input id = 'max'type="number" min="1800" max="2100" step="1" value="2021" name = "maxYear" />
+                            <input id='max' type="number" min="1800" max="2100" step="1" value="2021" name="maxYear" />
                         </div>
                     </div>
                     <div class="field">
-                        <div class="control"> <div class="select">
-                            <select name="groupBy" id="groupby">
-                                <option value = "all">All years</option>
-                                <option value = "dekaetia">Group by decade</option>
-                                <option value = "pentaetia">Group by five years</option>
-                            </select>
-                        </div></div>
+                        <div class="control">
+                            <div class="select">
+                                <select name="groupBy" id="groupby">
+                                    <option value="all">All years</option>
+                                    <option value="dekaetia">Group by decade</option>
+                                    <option value="pentaetia">Group by five years</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="field">
                         <div class="control">
