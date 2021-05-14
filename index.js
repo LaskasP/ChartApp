@@ -22,12 +22,12 @@ con.connect((e) => {
     console.log('Connection established!')
 })
 
-
-
 app.use(express.static('views'))
+
 app.get('/', (req, res) => {
     res.render('index')
 })
+
 app.get('/plot', (req, res) => {
     let { plot } = req.query
     let newQuery = ''
@@ -46,7 +46,7 @@ app.get('/plot', (req, res) => {
         newQuery = `SELECT year_value,value,CONCAT(country_name,' ','${req.query.table}') AS country_name FROM (SELECT  country_id,year_value,value FROM ${req.query.table}
             LEFT JOIN years ON ${req.query.table}.year_id = years.year_id) AS arxidia
             LEFT JOIN countries ON arxidia.country_id = countries.country_id
-            WHERE ${whereclase})  AND (year_value BETWEEN ${minYear} AND ${maxYear})`
+            WHERE ${whereclase}) AND (year_value BETWEEN ${minYear} AND ${maxYear})`
         for (let key of keys) {
             if (key[0] === 't' && key[5]) {
                 console.log(key)
@@ -87,7 +87,6 @@ app.get('/plot', (req, res) => {
             LEFT JOIN years ON ${req.query.table}.year_id = years.year_id) AS arxidia
             LEFT JOIN countries ON arxidia.country_id = countries.country_id 
             WHERE ${whereclase}) AND (year_value BETWEEN ${minYear} AND ${maxYear})`
-
         for (let key of keys) {
             if (key[0] === 't' && key[5]) {
                 console.log(key)
@@ -100,6 +99,7 @@ app.get('/plot', (req, res) => {
             }
         }
         newQuery += `ORDER BY year_value`
+        console.log(newQuery)
     }
     let { country } = req.query
     console.log(country)
@@ -109,8 +109,8 @@ app.get('/plot', (req, res) => {
         //console.log(results)
         res.render('show', { plot, results, tables, country })
     })
-
 })
+
 app.get('/tables', (req, res) => {
     con.query(
         'SELECT table_name FROM information_schema.tables WHERE table_schema ="chartapp"', (err, results, fields) => {
