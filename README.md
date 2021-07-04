@@ -1,5 +1,5 @@
 # ChartApp
-ChartApp is web app that displays beautiful d3.js charts created by dataset from www.gapminder.org/data
+ChartApp is web app that displays beautiful d3.js charts. Dataset from www.gapminder.org/data
 
 It's made with HTML + BULMA CSS + EJS + NodeJS + Express + MySQL
 
